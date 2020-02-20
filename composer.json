@@ -1,0 +1,12 @@
+{
+    "name": "jthatch/bees-in-the-trap",
+    "description": "A php7/phpspec solution to the Bees in the Trap technical test",
+    "type": "project",
+    "authors": [
+        {
+            "name": "James Thatcher",
+            "email": "james@jameswt.com"
+        }
+    ],
+    "require": {}
+}
