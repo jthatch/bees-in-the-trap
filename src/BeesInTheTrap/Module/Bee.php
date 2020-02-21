@@ -41,10 +41,7 @@ class Bee implements \SplSubject
     public function takeHit(): void
     {
         $this->health = max($this->health - $this->damage, 0);
-        // only notify if we die
-        //if ($this->isDead()) {
         $this->notify();
-        //}
     }
 
     public function isDead(): bool

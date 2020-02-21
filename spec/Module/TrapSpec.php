@@ -53,15 +53,24 @@ class TrapSpec extends ObjectBehavior
     {
         // unfortunately the `$bee instanceof Bee` logic in Trap->update() causes the phpspec assertions
         // to fail, so we do this the old fashioned way
-        $trap = new Trap($this->validTrap);
+        $hitCount = [];
+        $i        = 0;
+        fwrite(STDOUT, 'Simulating 100 games'."\n");
+        while ($i++ < 100) {
+            $trap = new Trap($this->validTrap);
+            $trap->build();
 
-        while (!$trap->isTrapDestroyed()) {
-            $trap->hit();
-            echo $trap->getLastBeeHitStatus()."\n";
+            while (!$trap->isTrapDestroyed()) {
+                $trap->hit();
+            }
+            $hitCount[] = $trap->getHitCount();
+            //fwrite(STDOUT, $trap->getLastBeeHitStatus()."\n");
         }
 
-        fwrite(STDOUT,
+        fwrite(STDOUT, 'hits taken: '.implode(',', $hitCount)."\n");
+
+        /*fwrite(STDOUT,
             sprintf("\n\nLast Hit Status contains \"Game Over\": %s\n",
-            stristr('Game Over', $trap->getLastBeeHitStatus()) >= 0 ? 'true' : 'false'));
+            stristr('Game Over', $trap->getLastBeeHitStatus()) >= 0 ? 'true' : 'false'));*/
     }
 }

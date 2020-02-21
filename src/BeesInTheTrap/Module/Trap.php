@@ -62,16 +62,16 @@ class Trap implements \SplObserver
 
     public function update(\SplSubject $bee): void
     {
-        if ($bee instanceof Bee) {
-            if ($bee->isDead()) {
-                if ($bee->isSupersedure() && !$this->isTrapDestroyed()) {
-                    $this->triggerSupersedure();
-                } else {
-                    $this->triggerDeadBee($bee);
-                }
+        //if ($bee instanceof Bee) {
+        if ($bee->isDead()) {
+            if ($bee->isSupersedure() && !$this->isTrapDestroyed()) {
+                $this->triggerSupersedure();
+            } else {
+                $this->triggerDeadBee($bee);
             }
-            $this->lastBeeHitId = $bee->getId();
         }
+        $this->lastBeeHitId = $bee->getId();
+        //}
     }
 
     public function getLastBeeHitStatus(): string
@@ -108,6 +108,11 @@ class Trap implements \SplObserver
         );
     }
 
+    public function getHitCount(): int
+    {
+        return $this->hitCount;
+    }
+
     public function isTrapDestroyed(): bool
     {
         return empty($this->livingBeeIds);
@@ -123,13 +128,20 @@ class Trap implements \SplObserver
 
     private function triggerDeadBee(Bee $bee): void
     {
-        if (!$this->isTrapDestroyed()) {
-            if (1 === count($this->livingBeeIds)) {
-                array_pop($this->livingBeeIds);
-            } else {
-                array_splice($this->livingBeeIds, array_search($bee->getId(), $this->livingBeeIds, true), 1);
-                $this->livingBeeIds = array_values($this->livingBeeIds);
+        try {
+            if (!$this->isTrapDestroyed()) {
+                if (1 === count($this->livingBeeIds)) {
+                    array_pop($this->livingBeeIds);
+                } else {
+                    $id = array_search($bee->getId(), $this->livingBeeIds, true);
+                    if (false !== $id) {
+                        array_splice($this->livingBeeIds, array_search($bee->getId(), $this->livingBeeIds, true), 1);
+                        $this->livingBeeIds = array_values($this->livingBeeIds);
+                    }
+                }
             }
+        } catch (\Error $e) {
+            print_r($e->getMessage());
         }
     }
 }
