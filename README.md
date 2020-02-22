@@ -14,17 +14,23 @@ A php7/phpspec solution to the Bees in the Trap technical test
 ## Usage
 ##### non-docker:
 - `./beesinthetrap.sh`
+- `./beesinthetrap.sh -v` *(To show verbose output including debugging)*
 ##### docker:
 - `make build`
 - `make run`
+- `make run-verbose` *(To show verbose output including debugging)*
 
 ## Example output
+*Playing a small game, note you can change trap size by overriding the env's in `beesinthetrap.sh`* 
 ![example-output](resources/bees-output.png)
+
+*With the verbose flag on (`-v`)*  
+![example-output-verbose](resources/bees-output-verbose.png)
 
 ## Tests
 Tests are written in BDD style using `phpspec`
 ##### non-docker:
-- `./beesinthetrap.sh`
+- `./bin/phpspec run --format=pretty`
 ##### docker:
 - `make test`
 
@@ -36,6 +42,7 @@ help                           This help.
 build                          Build docker image
 run                            Run the game
 test                           Run the testsuite
+run-verbose                    Run in container using verbose
 run-dev                        Run using local workspace
 test-dev                       Run tests using local workspace
 clean                          Clean old docker images not attached

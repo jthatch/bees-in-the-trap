@@ -19,11 +19,37 @@ class BeeSpec extends ObjectBehavior
         $this->shouldHaveType(Bee::class);
     }
 
+    public function it_implements_splsubject(): void
+    {
+        $this->shouldImplement(\SplSubject::class);
+    }
+
     public function it_can_take_a_hit(): void
     {
         $this->takeHit();
         $this->getHealth()->shouldReturn(92);
         $this->isDead()->shouldReturn(false);
+    }
+
+    public function it_will_know_when_its_close_to_death(): void
+    {
+        $this->takeHit();
+        $this->takeHit();
+        $this->takeHit();
+        $this->takeHit();
+        $this->takeHit();
+        $this->takeHit();
+        $this->takeHit();
+        $this->takeHit();
+        $this->takeHit();
+        $this->takeHit();
+        $this->takeHit();
+        $this->takeHit();
+
+        $this->getHealth()->shouldReturn(4);
+        $this->isCloseToDeath()->shouldReturn(true);
+        $this->isDead()->shouldReturn(false);
+        $this->isSupersedure()->shouldReturn(true);
     }
 
     public function it_will_die_after_being_hit_to_death(): void

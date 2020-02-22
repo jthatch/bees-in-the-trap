@@ -6,6 +6,7 @@ namespace spec\BeesInTheTrap\Module;
 
 use BeesInTheTrap\Module\Trap;
 use PhpSpec\ObjectBehavior;
+use Symfony\Component\Console\Output\NullOutput;
 
 class TrapSpec extends ObjectBehavior
 {
@@ -28,9 +29,10 @@ class TrapSpec extends ObjectBehavior
         ],
     ];
 
-    public function let(): void
+    public function let(NullOutput $output): void
     {
         $this->beConstructedWith($this->validTrap);
+        $this->setVerboseOutput($output);
         $this->build();
     }
 
@@ -49,28 +51,31 @@ class TrapSpec extends ObjectBehavior
         $this->hit()->shouldBeString();
     }
 
+    /**
+     * unfortunately the `$bee instanceof Bee` check in Trap->update() prevents the mocked objects being triggered
+     * in phpspec, so we do this the old fashioned way.
+     */
     public function it_will_destroy_the_trap_when_the_bees_are_all_dead(): void
     {
-        // unfortunately the `$bee instanceof Bee` logic in Trap->update() causes the phpspec assertions
-        // to fail, so we do this the old fashioned way
         $hitCount = [];
         $i        = 0;
+        $output   = new NullOutput();
         fwrite(STDOUT, 'Simulating 100 games'."\n");
         while ($i++ < 100) {
             $trap = new Trap($this->validTrap);
-            $trap->build();
+            $trap
+                ->setVerboseOutput($output)
+                ->build();
 
             while (!$trap->isTrapDestroyed()) {
                 $trap->hit();
             }
             $hitCount[] = $trap->getHitCount();
-            //fwrite(STDOUT, $trap->getLastBeeHitStatus()."\n");
         }
 
-        fwrite(STDOUT, 'hits taken: '.implode(',', $hitCount)."\n");
-
-        /*fwrite(STDOUT,
-            sprintf("\n\nLast Hit Status contains \"Game Over\": %s\n",
-            stristr('Game Over', $trap->getLastBeeHitStatus()) >= 0 ? 'true' : 'false'));*/
+        fwrite(STDOUT, 'Hits taken: '.implode(',', $hitCount)."\n");
+        $occurrences = array_count_values($hitCount);
+        arsort($occurrences);
+        fwrite(STDOUT, 'Occurrences: '.json_encode($occurrences)."\n");
     }
 }

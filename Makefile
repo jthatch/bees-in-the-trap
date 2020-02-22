@@ -27,6 +27,12 @@ test: ## Run the testsuite
 		"$(image-name):$(image-version)" \
 		php bin/phpspec run --format pretty
 
+run-verbose: ## Run in container using verbose
+	docker run -it --rm \
+		--name $(image-name) \
+		"$(image-name):$(image-version)" \
+		/bin/ash beesinthetrap.sh -v
+
 run-dev: ## Run using local workspace
 	docker run -it --rm \
 		--name $(image-name) \

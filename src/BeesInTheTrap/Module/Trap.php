@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace BeesInTheTrap\Module;
 
+use Symfony\Component\Console\Output\OutputInterface;
+
 class Trap implements \SplObserver
 {
     /** @var array */
     private $config;
 
-    /** @var Trap */
-    private $trap;
+    /** @var OutputInterface */
+    private $verbose;
 
     /** @var array */
     private $bees;
@@ -29,7 +31,7 @@ class Trap implements \SplObserver
         $this->config = $config;
     }
 
-    public function build(): void
+    public function build(): self
     {
         $beeId = 0;
         foreach ($this->config as $type => $attrib) {
@@ -46,37 +48,58 @@ class Trap implements \SplObserver
                 ++$beeId;
             }
         }
+        array_walk($this->bees, function (Bee $bee, $id): void {
+            $this->verbose->writeln(json_encode($bee->toArray()));
+        });
+        $this->verbose->writeln(sprintf('Living Bees: %s', json_encode($this->livingBeeIds)));
+
+        return $this;
+    }
+
+    public function setVerboseOutput(OutputInterface $output): self
+    {
+        $this->verbose = $output;
+
+        return $this;
     }
 
     public function hit(): string
     {
         ++$this->hitCount;
         $id = $this->livingBeeIds[array_rand($this->livingBeeIds, 1)];
-        //printf('--> id: %d remaining: %s ', $id, implode(',', $this->livingBeeIds)."\n");
         /** @var Bee $bee */
         $bee = $this->bees[$id];
+
         $bee->takeHit();
+
+        $this->verbose->writeLn(sprintf(
+            'Hit: random id: <info>%d</info> Bee stats: <info>%s</info> Alive: <info>%d</info>',
+            $id, json_encode($bee->toArray()), count($this->livingBeeIds)));
 
         return $this->getLastBeeHitStatus();
     }
 
+    /**
+     * @param \SplSubject|Bee $bee
+     */
     public function update(\SplSubject $bee): void
     {
-        //if ($bee instanceof Bee) {
-        if ($bee->isDead()) {
-            if ($bee->isSupersedure() && !$this->isTrapDestroyed()) {
-                $this->triggerSupersedure();
-            } else {
-                $this->triggerDeadBee($bee);
+        if ($bee instanceof Bee) {
+            if ($bee->isDead()) {
+                if ($bee->isSupersedure() && !$this->isTrapDestroyed()) {
+                    $this->triggerSupersedure();
+                } else {
+                    $this->triggerDeadBee($bee);
+                }
             }
+            $this->lastBeeHitId = $bee->getId();
         }
-        $this->lastBeeHitId = $bee->getId();
-        //}
     }
 
     public function getLastBeeHitStatus(): string
     {
-        $words = ['dished out', 'bestowed', 'gracefully delivered', 'accorded', 'lavished', 'dispensed'];
+        $words      = ['dished out', 'bestowed', 'gracefully delivered', 'accorded', 'lavished', 'dispensed', 'heaped on'];
+        $chosenWord = $words[array_rand($words, 1)];
         /** @var Bee $bee */
         $bee = $this->bees[$this->lastBeeHitId];
 
@@ -95,16 +118,18 @@ class Trap implements \SplObserver
             }
 
             return sprintf('<fg=red;options=bold>Fatal Hit. You %s <info>%d</info> damage and killed a <info>%s</info> bee</>',
-                $words[array_rand($words, 1)],
+                $chosenWord,
                 $bee->getDamage(),
                 $bee->getType()
             );
         }
 
-        return sprintf('Direct Hit. You %s <info>%d</info> damage to a <info>%s</info> bee',
-            $words[array_rand($words, 1)],
+        return sprintf('%sDirect Hit. You %s <info>%d</info> damage to a <info>%s</info> bee%s',
+            $bee->isCloseToDeath() ? '<fg=yellow;options=bold>' : '',
+            $chosenWord,
             $bee->getDamage(),
-            $bee->getType()
+            $bee->getType(),
+            $bee->isCloseToDeath() ? ' and it\'s close to death!</>' : ''
         );
     }
 

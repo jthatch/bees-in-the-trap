@@ -17,4 +17,4 @@ export BEE_DRONE_DAMAGE=12
 export BEE_DRONE_QUANTITY=8
 
 # run our game
-bin/console bees:play
+bin/console bees:play $@

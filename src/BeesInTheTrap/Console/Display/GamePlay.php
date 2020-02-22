@@ -7,6 +7,7 @@ namespace BeesInTheTrap\Console\Display;
 use BeesInTheTrap\Module\Trap;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 
@@ -27,20 +28,20 @@ class GamePlay
         $this->questionHelper = $questionHelper;
     }
 
-    /**
-     * Display the welcome message to the screen.
-     */
     public function run(InputInterface $input, OutputInterface $output): void
     {
-        $this->trap->build();
+        $this->trap
+            ->setVerboseOutput($output->isVerbose() ? $output : new NullOutput())
+            ->build();
+
         $question = new Question('Type <info>"hit"</info> to attack the trap:');
 
         while (!$this->trap->isTrapDestroyed()) {
-            //do {
-            $userInput = $this
+            do {
+                $userInput = $this
                     ->questionHelper
                     ->ask($input, $output, $question);
-            //} while ($userInput !== 'hit');
+            } while ('hit' !== $userInput && null !== $userInput);
 
             $output->writeLn(
                 $this->trap->hit()

@@ -24,9 +24,6 @@ class Bee implements \SplSubject
     /** @var \SplObjectStorage */
     private $observers;
 
-    /**
-     * Bee constructor.
-     */
     public function __construct(string $type, int $id, int $health, int $damage, bool $supersedure = false)
     {
         $this->type        = $type;
@@ -38,10 +35,18 @@ class Bee implements \SplSubject
         $this->observers = new \SplObjectStorage();
     }
 
+    /**
+     * Notify our observers.
+     */
     public function takeHit(): void
     {
         $this->health = max($this->health - $this->damage, 0);
         $this->notify();
+    }
+
+    public function isCloseToDeath(): bool
+    {
+        return 0 >= ($this->health - $this->damage);
     }
 
     public function isDead(): bool
@@ -77,6 +82,17 @@ class Bee implements \SplSubject
     public function triggerSupersedure(): void
     {
         $this->health = 0;
+    }
+
+    public function toArray(): array
+    {
+        return [
+            'id'          => $this->getId(),
+            'type'        => $this->getType(),
+            'health'      => $this->getHealth(),
+            'damage'      => $this->getDamage(),
+            'supersedure' => $this->isSupersedure() ? 1 : 0,
+        ];
     }
 
     public function attach(\SplObserver $observer): void
