@@ -1,8 +1,10 @@
-FROM php:7.3-cli-alpine
+ARG PHP_VERSION=7.3
+
+FROM php:${PHP_VERSION}-cli-alpine
 
 # configure and enable our php extensions
 RUN apk --update upgrade \
-    && apk add --no-cache autoconf automake make gcc g++ icu-dev \
+    && apk add --no-cache --virtual .build-deps autoconf automake make gcc g++ icu-dev \
     #&& pecl install xdebug-2.9.1 \
     && docker-php-ext-install -j$(nproc) \
         bcmath \
@@ -10,10 +12,8 @@ RUN apk --update upgrade \
         intl
 
 # install composer and config our php.ini
-RUN php -r "copy('http://getcomposer.org/installer', 'composer-setup.php');" && \
-    php composer-setup.php --install-dir=/usr/bin --filename=composer && \
-    php -r "unlink('composer-setup.php');" && \
-    cp /usr/local/etc/php/php.ini-development /usr/local/etc/php/php.ini
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+RUN cp /usr/local/etc/php/php.ini-development /usr/local/etc/php/php.ini
 
 # keep it simple for the workdir as we're using cli
 WORKDIR /app
