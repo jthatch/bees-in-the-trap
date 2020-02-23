@@ -15,7 +15,7 @@ class Trap implements \SplObserver
     private $verbose;
 
     /** @var array */
-    private $bees;
+    private $bees = [];
 
     /** @var array */
     private $livingBeeIds = [];
@@ -26,9 +26,16 @@ class Trap implements \SplObserver
     /** @var int */
     private $hitCount;
 
-    public function __construct(array $config)
+    public function __construct(array $config = [])
+    {
+        $this->setConfig($config);
+    }
+
+    public function setConfig(array $config) : self
     {
         $this->config = $config;
+
+        return $this;
     }
 
     public function build(): self
@@ -65,12 +72,17 @@ class Trap implements \SplObserver
 
     public function hit(): string
     {
-        ++$this->hitCount;
         $id = $this->livingBeeIds[array_rand($this->livingBeeIds, 1)];
-        /** @var Bee $bee */
-        $bee = $this->bees[$id];
+        /** @var Bee|null $bee */
+        $bee = $this->bees[$id] ?? null;
+
+        // immediately return if we can't find the bee
+        if (null === $bee) {
+            return $this->getLastBeeHitStatus();
+        }
 
         $bee->takeHit();
+        ++$this->hitCount;
 
         $this->verbose->writeLn(sprintf(
             'Hit: random id: <info>%d</info> Bee stats: <info>%s</info> Alive: <info>%d</info>',
@@ -101,9 +113,9 @@ class Trap implements \SplObserver
         $words      = ['dished out', 'bestowed', 'gracefully delivered', 'accorded', 'lavished', 'dispensed', 'heaped on'];
         $chosenWord = $words[array_rand($words, 1)];
         /** @var Bee $bee */
-        $bee = $this->bees[$this->lastBeeHitId];
+        $bee = $this->bees[$this->lastBeeHitId] ?? null;
 
-        if ($this->isTrapDestroyed()) {
+        if (null === $bee || $this->isTrapDestroyed()) {
             return sprintf('<fg=green;options=bold>Congratulations, Game Over! After %d hits you destroyed the trap!</>',
                 $this->hitCount
             );

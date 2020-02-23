@@ -26,6 +26,7 @@ RUN composer install && composer dump-autoload -o
 COPY src/ src/
 COPY spec/ spec/
 COPY bin/console bin/console
-COPY beesinthetrap.sh phpspec.yml ./
+COPY beesinthetrap.sh phpspec.yml .env* ./
+RUN php -r 'file_exists(".env") || copy(".env.example", ".env");'
 
 CMD ["/bin/ash", "/app/beesinthetrap.sh"]

@@ -29,6 +29,8 @@ class TrapSpec extends ObjectBehavior
         ],
     ];
 
+    private $emptyTrap = [];
+
     public function let(NullOutput $output): void
     {
         $this->beConstructedWith($this->validTrap);

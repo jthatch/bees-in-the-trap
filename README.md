@@ -9,7 +9,7 @@ A php7/phpspec solution to the Bees in the Trap technical test
 
 ## Installation (non-docker):
 - `git clone git@github.com:jthatch/bees-in-the-trap.git`
-- `cd bees-in-the-trap && composer install`
+- `cd bees-in-the-trap && cp .env.example .env && composer install`
 
 ## Usage
 ##### non-docker:

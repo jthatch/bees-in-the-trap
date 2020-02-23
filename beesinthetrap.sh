@@ -1,20 +1,20 @@
 #!/usr/bin/env sh
 
-# set our game environment up
-# note the word supersedure is used by beekeepers to describe the death and replacement of a queen bee
-# in this instance, when a queen dies the rest of the hive will also die
-export BEE_QUEEN_LIFESPAN=100
-export BEE_QUEEN_DAMAGE=8
-export BEE_QUEEN_QUANTITY=1
-export BEE_QUEEN_SUPERSEDURE=1
-
-export BEE_WORKER_LIFESPAN=75
-export BEE_WORKER_DAMAGE=10
-export BEE_WORKER_QUANTITY=5
-
-export BEE_DRONE_LIFESPAN=50
-export BEE_DRONE_DAMAGE=12
-export BEE_DRONE_QUANTITY=8
+# Process our .env and create environmental variables in the shell we spawn the bees game
+dotEnvFile="./.env"
+if [[ -f $dotEnvFile ]]; then
+  while read line; do
+    # remove leading spaces (e.g. ' # some comment' becomes '# some comment')
+    line="$(echo ${line} | sed -e 's/^[[:space:]]*//')"
+    # if line isn't empty or doesn't begin with a comment
+    if [ ! -z "$line" ] && [[ ${line:0:1} != '#' ]]; then
+      # split line into key value stripping whitespace from end/beginning
+      key=$(echo $line | cut -f1 -d= | sed -e 's/[[:space:]]*$//')
+      value=$(echo $line | cut -f2 -d= | sed -e 's/^[[:space:]]*//')
+      export ${key}=${value}
+    fi
+  done < $dotEnvFile
+fi
 
 # run our game
 bin/console bees:play $@
