@@ -1,5 +1,5 @@
 # bees-in-the-trap
-A php7/phpspec solution to the Bees in the Trap technical test
+A php7/phpspec solution to the Bees in the Trap technical test by [James Thatcher](https://github.com/jthatch) 2020
 
 ## Requirements
 ##### non-docker:
