@@ -60,11 +60,15 @@ class TrapSpec extends ObjectBehavior
      */
     public function it_will_destroy_the_trap_when_the_bees_are_all_dead() : void
     {
-        $simulations = 100;
-        $beginMsg    = "Simulating ${simulations} games";
-        $hitCount    = [];
-        $output      = new NullOutput();
-        $trapConfig  = $this->validTrap;
+        $simulations            = 100;
+        $simulationsOutputEvery = ceil($simulations / 100) * 100 / 100;
+        $beginMsg               = sprintf('Simulating %d games (. = %d game%s)',
+            $simulations,
+            $simulationsOutputEvery,
+            $simulationsOutputEvery === 1 ? '' : 's');
+        $hitCount               = [];
+        $output                 = new NullOutput();
+        $trapConfig             = $this->validTrap;
 
         // attempt to read env from .env
         // this allows us to play with the number of bees, their lifespan etc and see what interesting results we find
@@ -90,7 +94,9 @@ class TrapSpec extends ObjectBehavior
                 $trap->hit();
             }
             $hitCount[] = $trap->getHitCount();
-            fwrite(STDOUT, '.');
+            if ($simulationCount % $simulationsOutputEvery === 0) {
+                fwrite(STDOUT, '.');
+            }
         }
 
         fwrite(STDOUT, "\r" . str_repeat(' ', $simulations + strlen($beginMsg)) . "\r${beginMsg} ✔\n");
