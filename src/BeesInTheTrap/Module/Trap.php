@@ -31,7 +31,7 @@ class Trap implements \SplObserver
         $this->setConfig($config);
     }
 
-    public function setConfig(array $config) : self
+    public function setConfig(array $config): self
     {
         $this->config = $config;
 

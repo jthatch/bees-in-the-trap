@@ -14,7 +14,7 @@ A php7/phpspec solution to the Bees in the Trap technical test by [James Thatche
 ## Usage
 ##### non-docker:
 - `./beesinthetrap.sh`
-- `./beesinthetrap.sh -v` *(To show verbose output including debugging)*
+- `./beesinthetrap.sh -v`
 ##### docker:
 - `make build`
 - `make run`
@@ -27,10 +27,20 @@ A php7/phpspec solution to the Bees in the Trap technical test by [James Thatche
 *With the verbose flag on (`-v`)*  
 ![example-output-verbose](resources/bees-output-verbose.png)
 
+*Simulating 70 games and showing the results*  
+![example-output-simulator](resources/bees-output-simulator.png)
+
 ## Tests
-Tests are written in BDD style using `phpspec`
+Tests are written in BDD style using `phpspec`.  
+
+>The game simulator can be accessed by passing `SIMULATIONS=n` as an argument before initiating `phpspec`. 
+>
+>The results of each simulation will be aggregated and displayed below, including hit count distributions and the game with the least and most amount of hits.  
+>  
+>For the record, the lowest possible hit count (e.g. hitting the queen **every single time**) is **13 hits**. The lowest I've managed to get is *47 hits* with 50'000 simulations.   
 ##### non-docker:
 - `./bin/phpspec run --format=pretty`
+- `SIMULATIONS=10000 ./bin/phpspec run --format=pretty`
 ##### docker:
 - `make test`
 
