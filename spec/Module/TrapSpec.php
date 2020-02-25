@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace spec\BeesInTheTrap\Module;
 
 use BeesInTheTrap\Module\Trap;
+use BeesInTheTrap\Config\Config;
 use PhpSpec\ObjectBehavior;
 use Symfony\Component\Console\Output\NullOutput;
 
@@ -57,14 +58,30 @@ class TrapSpec extends ObjectBehavior
      * unfortunately the `$bee instanceof Bee` check in Trap->update() prevents the mocked objects being triggered
      * in phpspec, so we do this the old fashioned way.
      */
-    public function it_will_destroy_the_trap_when_the_bees_are_all_dead(): void
+    public function it_will_destroy_the_trap_when_the_bees_are_all_dead() : void
     {
-        $hitCount = [];
-        $i        = 0;
-        $output   = new NullOutput();
-        fwrite(STDOUT, 'Simulating 100 games'."\n");
-        while ($i++ < 100) {
-            $trap = new Trap($this->validTrap);
+        $simulations = 100;
+        $beginMsg    = "Simulating ${simulations} games";
+        $hitCount    = [];
+        $output      = new NullOutput();
+        $trapConfig  = $this->validTrap;
+
+        // attempt to read env from .env
+        // this allows us to play with the number of bees, their lifespan etc and see what interesting results we find
+        $dotEnvFile = __DIR__ . '/../../.env';
+        if (file_exists($dotEnvFile)) {
+            array_map(static function($line) {
+                putenv($line);
+            }, file($dotEnvFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES));
+
+            $trapConfig = Config::get();
+        }
+
+        fwrite(STDOUT, $beginMsg);
+
+        $simulationCount = $simulations;
+        while ($simulationCount-- > 0) {
+            $trap = new Trap($trapConfig);
             $trap
                 ->setVerboseOutput($output)
                 ->build();
@@ -73,11 +90,20 @@ class TrapSpec extends ObjectBehavior
                 $trap->hit();
             }
             $hitCount[] = $trap->getHitCount();
+            fwrite(STDOUT, '.');
         }
+
+        fwrite(STDOUT, "\r" . str_repeat(' ', $simulations + strlen($beginMsg)) . "\r${beginMsg} ✔\n");
 
         fwrite(STDOUT, 'Hits taken: '.implode(',', $hitCount)."\n");
         $occurrences = array_count_values($hitCount);
         arsort($occurrences);
         fwrite(STDOUT, 'Occurrences: '.json_encode($occurrences)."\n");
+        fwrite(STDOUT,sprintf( "Shortest Game: %d (%d occurrences), Longest Game: %d (%d occurrences)\n",
+            min(array_keys($occurrences)),
+            $occurrences[min(array_keys($occurrences))],
+            max(array_keys($occurrences)),
+            $occurrences[max(array_keys($occurrences))]
+        ));
     }
 }
