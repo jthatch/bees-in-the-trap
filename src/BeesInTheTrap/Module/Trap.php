@@ -28,14 +28,7 @@ class Trap implements \SplObserver
 
     public function __construct(array $config = [])
     {
-        $this->setConfig($config);
-    }
-
-    public function setConfig(array $config): self
-    {
         $this->config = $config;
-
-        return $this;
     }
 
     public function build(): self
@@ -43,13 +36,7 @@ class Trap implements \SplObserver
         $beeId = 0;
         foreach ($this->config as $type => $attrib) {
             for ($i = 0; $i < $attrib['quantity']; ++$i) {
-                $this->bees[$beeId] = new Bee(
-                    $type,
-                    $beeId,
-                    $attrib['lifespan'],
-                    $attrib['damage'],
-                    isset($attrib['supersedure']) && 1 === $attrib['supersedure']
-                );
+                $this->bees[$beeId] = $this->buildBee($type, $beeId, $attrib);
                 $this->bees[$beeId]->attach($this);
                 $this->livingBeeIds[] = $beeId;
                 ++$beeId;
@@ -155,9 +142,23 @@ class Trap implements \SplObserver
         return empty($this->livingBeeIds);
     }
 
+    private function buildBee(string $type, int $beeId, array $attrib): Bee
+    {
+        return new Bee(
+            $type,
+            $beeId,
+            $attrib['lifespan'],
+            $attrib['damage'],
+            isset($attrib['supersedure']) && 1 === $attrib['supersedure']
+        );
+    }
+
     private function triggerSupersedure(): void
     {
-        array_walk($this->bees, function (Bee $bee): void {
+        // kill all remaining alive bees
+        array_walk($this->livingBeeIds, function (int $beeId): void {
+            /** @var Bee $bee */
+            $bee = $this->bees[$beeId];
             $bee->triggerSupersedure();
             $this->triggerDeadBee($bee);
         });
@@ -165,20 +166,8 @@ class Trap implements \SplObserver
 
     private function triggerDeadBee(Bee $bee): void
     {
-        try {
-            if (!$this->isTrapDestroyed()) {
-                if (1 === count($this->livingBeeIds)) {
-                    array_pop($this->livingBeeIds);
-                } else {
-                    $id = array_search($bee->getId(), $this->livingBeeIds, true);
-                    if (false !== $id) {
-                        array_splice($this->livingBeeIds, array_search($bee->getId(), $this->livingBeeIds, true), 1);
-                        $this->livingBeeIds = array_values($this->livingBeeIds);
-                    }
-                }
-            }
-        } catch (\Error $e) {
-            print_r($e->getMessage());
-        }
+        $id = array_search($bee->getId(), $this->livingBeeIds, true);
+        array_splice($this->livingBeeIds, $id, 1);
+        $this->livingBeeIds = array_values($this->livingBeeIds);
     }
 }

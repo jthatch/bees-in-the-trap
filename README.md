@@ -1,4 +1,4 @@
-# bees-in-the-trap
+# Bees In The Trap - PHP7 Solution
 A php7/phpspec solution to the Bees in the Trap technical test by [James Thatcher](https://github.com/jthatch) 2020
 
 ## Requirements
@@ -14,17 +14,15 @@ A php7/phpspec solution to the Bees in the Trap technical test by [James Thatche
 ## Usage
 ##### non-docker:
 - `./beesinthetrap.sh`
-- `./beesinthetrap.sh -v`
 ##### docker:
 - `make build`
 - `make run`
-- `make run-verbose` *(To show verbose output including debugging)*
 
 ## Example output
 *Playing a small game, note you can change trap size by overriding the env's in `beesinthetrap.sh`* 
 ![example-output](resources/bees-output.png)
 
-*With the verbose flag on (`-v`)*  
+*With the verbose flag on (`-v` or `make run-verbose`)*  
 ![example-output-verbose](resources/bees-output-verbose.png)
 
 *Simulating 70 games and showing the results*  
