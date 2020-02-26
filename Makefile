@@ -24,6 +24,7 @@ test: ## Run the testsuite
 	docker run -it --rm \
 		--name $(image-name) \
 		-w /app \
+		-e "SIMULATIONS=${SIMULATIONS}" \
 		"$(image-name):$(image-version)" \
 		php bin/phpspec run --format pretty
 

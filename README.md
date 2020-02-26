@@ -37,12 +37,13 @@ Tests are written in BDD style using `phpspec`.
 >
 >The results of each simulation will be aggregated and displayed below, including hit count distributions and the game with the least and most amount of hits.  
 >  
->For the record, the lowest possible hit count (e.g. hitting the queen **every single time**) is **13 hits**. The lowest I've managed to get is *47 hits* with 50'000 simulations.   
+>For the record, the lowest possible hit count (e.g. hitting the queen **every single time**) is **13 hits**. The lowest I've managed to get is *37 hits* with a million simulations.   
 ##### non-docker:
 - `./bin/phpspec run --format=pretty`
 - `SIMULATIONS=10000 ./bin/phpspec run --format=pretty`
 ##### docker:
 - `make test`
+- `SIMULATIONS=100000 make test`
 
 ## Make commands
 I've added a few extra `make` commands to make local dev and testing easier.
