@@ -1,4 +1,4 @@
-.PHONY: all
+.PHONY: all test
 
 help: ## This help.
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -32,7 +32,7 @@ run-verbose: ## Run in container using verbose
 	docker run -it --rm \
 		--name $(image-name) \
 		"$(image-name):$(image-version)" \
-		/bin/ash beesinthetrap.sh -v
+		/bin/ash beesinthetrap -v
 
 run-dev: ## Run using local workspace
 	docker run -it --rm \
@@ -40,7 +40,7 @@ run-dev: ## Run using local workspace
 		-v "$(PWD)":/app \
 		-w /app \
 		"$(image-name):$(image-version)" \
-		/bin/ash beesinthetrap.sh
+		/bin/ash beesinthetrap
 
 test-dev: ## Run tests using local workspace
 	docker run -it --rm \

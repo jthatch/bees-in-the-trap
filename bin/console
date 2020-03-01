@@ -4,8 +4,8 @@
 require __DIR__.'/../vendor/autoload.php';
 
 use Symfony\Component\Console\Application;
-use BeesInTheTrap\Container\Container;
+use BeesInTheTrap\Container\GameContainer;
 
-Container::build()
+GameContainer::build()
     ->get(Application::class)
     ->run();

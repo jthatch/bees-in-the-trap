@@ -1,15 +1,6 @@
-ARG PHP_VERSION=7.3
+ARG PHP_VERSION=7.4
 
 FROM php:${PHP_VERSION}-cli-alpine
-
-# configure and enable our php extensions
-RUN apk --update upgrade \
-    && apk add --no-cache --virtual .build-deps autoconf automake make gcc g++ icu-dev \
-    #&& pecl install xdebug-2.9.1 \
-    && docker-php-ext-install -j$(nproc) \
-        bcmath \
-        opcache \
-        intl
 
 # install composer and config our php.ini
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -24,9 +15,9 @@ COPY composer.json composer.lock ./
 RUN composer install && composer dump-autoload -o
 
 COPY src/ src/
-COPY spec/ spec/
+COPY test/ test/
 COPY bin/console bin/console
-COPY beesinthetrap.sh phpspec.yml .env* ./
+COPY beesinthetrap phpunit.xml.dist .env* ./
 RUN php -r 'file_exists(".env") || copy(".env.example", ".env");'
 
-CMD ["/bin/ash", "/app/beesinthetrap.sh"]
+CMD ["/bin/ash", "/app/beesinthetrap", "-a"]

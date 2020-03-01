@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace BeesInTheTrap\Container;
+namespace BeesInTheTrap\Exception;
 
 use Psr\Container\NotFoundExceptionInterface;
 
@@ -15,7 +15,7 @@ final class NotFoundException extends \Exception implements NotFoundExceptionInt
     {
         return new self(
             sprintf(
-                'Container doesn\'t have service or parameter with id "%s".',
+                'GameContainer doesn\'t have service or parameter with id "%s".',
                 $id
             )
         );

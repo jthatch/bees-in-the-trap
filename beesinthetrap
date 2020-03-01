@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+
+# run our game
+bin/console bees:play $@

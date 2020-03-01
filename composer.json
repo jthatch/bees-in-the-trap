@@ -1,6 +1,6 @@
 {
     "name": "jthatch/bees-in-the-trap",
-    "description": "A php7/phpspec solution to the Bees in the Trap technical test",
+    "description": "A PHP7.4 solution to the Bees in the Trap technical test using bdd and tdd tests",
     "authors": [
         {
             "name": "James Thatcher",
@@ -9,11 +9,16 @@
     ],
     "autoload": {
         "psr-4": {
-            "BeesInTheTrap\\": "src/BeesInTheTrap"
+            "BeesInTheTrap\\": "src/BeesInTheTrap/Domain"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Test\\": "test/"
         }
     },
     "require": {
-        "php": ">=7.1",
+        "php": "^7.4",
         "phpspec/phpspec": "^6.1",
         "symfony/console": "^5.0",
         "ext-json": "*"
@@ -25,7 +30,8 @@
     },
     "scripts": {
         "cs-fixer-ci": "bin/php-cs-fixer fix --config=php_cs.dist --dry-run",
-        "cs-fixer": "bin/php-cs-fixer fix --config=php_cs.dist"
+        "cs-fixer": "bin/php-cs-fixer fix --config=php_cs.dist",
+        "test" : "bin/phpunit"
     },
     "config": {
         "bin-dir": "bin"
