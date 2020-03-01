@@ -1,58 +1,30 @@
 # Bees In The Trap - PHP7 Solution
-A php7/phpspec solution to the Bees in the Trap technical test by [James Thatcher](https://github.com/jthatch) 2020
+A php7.4 solution to the Bees in the Trap technical test by [James Thatcher](https://github.com/jthatch) 2020.   
+Uses Domain-driven and factory design patterns.
 
 ## Requirements
 ##### non-docker:
-- PHP 7.1 or later, [composer](https://getcomposer.org/)   
+- PHP 7.4 or later, [composer](https://getcomposer.org/)   
 ##### docker:
 - [Make](https://www.gnu.org/software/make/) and [Docker](https://www.docker.com)
 
 ## Installation (non-docker):
 - `git clone git@github.com:jthatch/bees-in-the-trap.git`
-- `cd bees-in-the-trap && cp .env.example .env && composer install`
+- `cd bees-in-the-trap && composer install`
 
 ## Usage
 ##### non-docker:
-- `./beesinthetrap.sh`
+- `./beesinthetrap`
 ##### docker:
 - `make build`
 - `make run`
 
 ## Example output
-*Playing a small game, note you can change trap size by overriding the env's in `beesinthetrap.sh`* 
+*Playing a small game* 
 ![example-output](resources/bees-output.png)
 
-*With the verbose flag on (`-v` or `make run-verbose`)*  
-![example-output-verbose](resources/bees-output-verbose.png)
-
-*Simulating 70 games and showing the results*  
-![example-output-simulator](resources/bees-output-simulator.png)
-
-## Tests
-Tests are written in BDD style using `phpspec`.  
-
->The game simulator can be accessed by passing `SIMULATIONS=n` as an argument before initiating `phpspec`. 
->
->The results of each simulation will be aggregated and displayed below, including hit count distributions and the game with the least and most amount of hits.  
->  
->For the record, the lowest possible hit count (e.g. hitting the queen **every single time**) is **13 hits**. The lowest I've managed to get is *37 hits* with a million simulations.   
+## Tests     
 ##### non-docker:
-- `./bin/phpspec run --format=pretty`
-- `SIMULATIONS=10000 ./bin/phpspec run --format=pretty`
+- `./bin/phpunit -c phpunit.xml.dist`
 ##### docker:
 - `make test`
-- `SIMULATIONS=100000 make test`
-
-## Make commands
-I've added a few extra `make` commands to make local dev and testing easier.
-
-```bash
-help                           This help.
-build                          Build docker image
-run                            Run the game
-test                           Run the testsuite
-run-verbose                    Run in container using verbose
-run-dev                        Run using local workspace
-test-dev                       Run tests using local workspace
-clean                          Clean old docker images not attached
-```

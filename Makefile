@@ -26,7 +26,7 @@ test: ## Run the testsuite
 		-w /app \
 		-e "SIMULATIONS=${SIMULATIONS}" \
 		"$(image-name):$(image-version)" \
-		php bin/phpspec run --format pretty
+		./bin/phpunit -c phpunit.xml.dist
 
 run-verbose: ## Run in container using verbose
 	docker run -it --rm \
@@ -40,14 +40,14 @@ run-dev: ## Run using local workspace
 		-v "$(PWD)":/app \
 		-w /app \
 		"$(image-name):$(image-version)" \
-		/bin/ash beesinthetrap
+		/bin/ash ./beesinthetrap
 
 test-dev: ## Run tests using local workspace
 	docker run -it --rm \
 		--name $(image-name) \
 		-v "$(PWD)":/app \
 		"$(image-name):$(image-version)" \
-		php bin/phpspec run --format pretty
+		./bin/phpunit -c phpunit.xml.dist
 
 
 clean: ## Clean old docker images not attached
